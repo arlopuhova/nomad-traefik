@@ -1,9 +1,4 @@
 #! /bin/bash
 
-set -e
-
-host_ip=$(netsh interface ip show addresses "vEthernet (Default Switch)" \
-    | sed -n 's/.*IP Address:\s*//p')
-
-echo "$host_ip" > host_ip
-echo "host IP: $host_ip"
+export SERVER_IP=$(cat /vagrant/server_ip)
+export NOMAD_ADDR="http://$SERVER_IP:4646"

@@ -10,6 +10,7 @@ job "traefik" {
 
       config {
         image = "traefik:1.7.12"
+        network_mode = "host"
 
         args = [
           "--api",
@@ -27,11 +28,16 @@ job "traefik" {
 
       resources {
         network {
-          port "http" { static = 8000 }
+          port "http" { static = 80 }
           port "ui" { static = 8080 }
         }
 
         memory = 50
+      }
+
+      service {
+        name = "traefik"
+        port = "http"
       }
 
     }
