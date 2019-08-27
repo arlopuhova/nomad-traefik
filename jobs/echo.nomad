@@ -5,6 +5,11 @@ job "echo" {
   group "apis" {
     count = 3
 
+    update {
+      max_parallel = 1
+      canary = 1
+    }
+
     task "echo" {
       driver = "docker"
 
@@ -29,12 +34,14 @@ job "echo" {
       }
 
       service {
-        name = "echo"
+        name = "echo-canary"
         port = "http"
 
-        tags = [
+        tags = []
+        canary_tags = [
           "traefik.enable=true",
-          "traefik.frontend.rule=Host:api.localhost"
+          "traefik.frontend.rule=Host:api.localhost;Headers:Canary,true",
+          "traefik.frontend.priority=2"
         ]
 
         check {
@@ -44,38 +51,18 @@ job "echo" {
           timeout = "1s"
         }
       }
-    }
-
-    task "echo-2"{
-      driver = "docker"
-
-      config {
-        image = "containersol/k8s-deployment-strategies"
-
-        port_map {
-          http = 8080
-        }
-      }
-
-      env {
-        VERSION = "2.0.0"
-      }
-
-      resources {
-        network {
-          port "http" { }
-        }
-
-        memory = 50
-      }
 
       service {
-        name = "echo-2"
+        name = "echo"
         port = "http"
 
         tags = [
           "traefik.enable=true",
-          "traefik.frontend.rule=Host:api.localhost;Headers:alternative,true"
+          "traefik.frontend.rule=Host:api.localhost",
+          "traefik.frontend.priority=1"
+        ]
+        canary_tags = [
+          "traefik.enable=false"
         ]
 
         check {

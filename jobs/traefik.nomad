@@ -15,7 +15,7 @@ job "traefik" {
         args = [
           "--api",
           "--consulcatalog",
-          "--consulcatalog.endpoint=consul.service.consul:8500",
+          "--consulcatalog.endpoint=${attr.unique.network.ip-address}:8500",
           "--consulcatalog.frontEndRule=''",
           "--consulcatalog.exposedByDefault=false"
         ]
